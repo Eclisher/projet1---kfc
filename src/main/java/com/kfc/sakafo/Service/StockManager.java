@@ -94,8 +94,4 @@ public class StockManager {
             return topIngredients.subList(0, X);
         }
     }
-
-
-
-
 }
