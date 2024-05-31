@@ -34,10 +34,8 @@ public class MenuManagerTest {
     @Test
     public void testAddIngredientToMenu() {
         menuManager.createMenu(1, "Menu 1");
-
         Unit piece = new Unit(1, "Pièce");
         Ingredient pain = new Ingredient(1, "Pain", 500, piece);
-
         menuManager.addIngredientToMenu(1, pain, 2);
         Menu menu = menuManager.getMenu(1);
 
@@ -49,18 +47,15 @@ public class MenuManagerTest {
     @Test
     public void testUpdateIngredientQuantityInMenu() {
         menuManager.createMenu(1, "Menu 1");
-
         Unit piece = new Unit(1, "Pièce");
         Ingredient pain = new Ingredient(1, "Pain", 500, piece);
         Ingredient saucisse = new Ingredient(2, "Saucisse", 20000, piece);
-
         menuManager.createMenu(1, "Menu 1");
         menuManager.addIngredientToMenu(1, pain, 2);
         menuManager.addIngredientToMenu(1, saucisse, 1);
-
         menuManager.updateIngredientQuantityInMenu(1, pain, 5);
         Menu menu = menuManager.getMenu(1);
-
         assertEquals(5, menu.getIngredients().get(0).getQuantite());
     }
+
 }

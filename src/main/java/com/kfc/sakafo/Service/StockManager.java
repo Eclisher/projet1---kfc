@@ -5,10 +5,12 @@ import com.kfc.sakafo.Model.*;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StockManager {
     private Map<Integer, Stock> stockMap = new HashMap<>();
     public List<Stock> stocks = new ArrayList<>();
+    private List<MenuSale> menuSales = new ArrayList<>();
     public void initializeStock(List<Ingredient> ingredients) {
         for (Ingredient ingredient : ingredients) {
             stockMap.put(ingredient.getId(), new Stock(ingredient, 0, Instant.now(), null));
@@ -68,5 +70,32 @@ public class StockManager {
             stock.setMovementType(MovementType.SORTIE);
         }
     }
+    public void recordMenuSale(MenuSale menuSale) {
+        menuSales.add(menuSale);
+    }
+
+    public List<TopIngredient> getTopUsedIngredients(int X, Instant startTime, Instant endTime) {
+        Map<Ingredient, Double> ingredientUsage = new HashMap<>();
+        List<MenuSale> salesInInterval = menuSales.stream()
+                .filter(sale -> !sale.getSaleTime().isBefore(startTime) && !sale.getSaleTime().isAfter(endTime))
+                .collect(Collectors.toList());
+        for (MenuSale sale : salesInInterval) {
+            for (IngredientMenu ingredientMenu : sale.getMenu().getIngredients()) {
+                ingredientUsage.merge(ingredientMenu.getIngredient(), ingredientMenu.getQuantite(), Double::sum);
+            }
+        }
+        List<TopIngredient> topIngredients = ingredientUsage.entrySet().stream()
+                .sorted((e1, e2) -> Double.compare(e2.getValue(), e1.getValue()))
+                .map(e -> new TopIngredient(e.getKey().getId(), e.getKey().getName(), e.getValue(), e.getKey().getUnit().getName()))
+                .collect(Collectors.toList());
+        if (X > topIngredients.size()) {
+            return topIngredients;
+        } else {
+            return topIngredients.subList(0, X);
+        }
+    }
+
+
+
 
 }
