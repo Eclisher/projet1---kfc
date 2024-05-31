@@ -1,8 +1,8 @@
 package com.kfc.sakafo.Service;
 
-import com.kfc.sakafo.Model.Ingredient;
-import com.kfc.sakafo.Model.MovementType;
-import com.kfc.sakafo.Model.Stock;
+import com.kfc.sakafo.InsufficientStockException;
+import com.kfc.sakafo.Model.*;
+
 import java.time.Instant;
 import java.util.*;
 
@@ -53,6 +53,20 @@ public class StockManager {
             }
         }
         return result;
+    }
+    public void sellMenu(Menu menu) {
+        for (IngredientMenu ingredientMenu : menu.getIngredients()) {
+            Stock stock = stockMap.get(ingredientMenu.getIngredient().getId());
+            if (stock == null || stock.getQuantity() < ingredientMenu.getQuantite()) {
+                throw new InsufficientStockException("Insufficient stock for ingredient: " + ingredientMenu.getIngredient().getName());
+            }
+        }
+        for (IngredientMenu ingredientMenu : menu.getIngredients()) {
+            Stock stock = stockMap.get(ingredientMenu.getIngredient().getId());
+            stock.setQuantity(stock.getQuantity() - ingredientMenu.getQuantite());
+            stock.setLastUpdatedTime(Instant.now());
+            stock.setMovementType(MovementType.SORTIE);
+        }
     }
 
 }

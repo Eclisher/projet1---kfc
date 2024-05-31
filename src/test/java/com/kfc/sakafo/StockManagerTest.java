@@ -1,9 +1,6 @@
 package com.kfc.sakafo;
 
-import com.kfc.sakafo.Model.Ingredient;
-import com.kfc.sakafo.Model.MovementType;
-import com.kfc.sakafo.Model.Stock;
-import com.kfc.sakafo.Model.Unit;
+import com.kfc.sakafo.Model.*;
 import com.kfc.sakafo.Service.StockManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,4 +71,16 @@ public class StockManagerTest {
         List<Stock> result = stockManager.getStockMovementsInTimeInterval(startTime, endTime);
         assertEquals(3, result.size());
     }
+    @Test
+    public void testSellMenu() {
+        stockManager.supplyIngredient(1, 100, Instant.now());
+        stockManager.supplyIngredient(2, 50, Instant.now());
+        Menu menu = new Menu(1, "Menu 1");
+        menu.addIngredient(new IngredientMenu(null, menu, new Ingredient(1, "Pain", 500, new Unit(1, "Pièce")), 50));
+        menu.addIngredient(new IngredientMenu(null, menu, new Ingredient(2, "Saucisse", 20000, new Unit(2, "KG")), 30));
+        stockManager.sellMenu(menu);
+        assertEquals(50, stockManager.getRemainingQuantity(1));
+        assertEquals(20, stockManager.getRemainingQuantity(2));
+    }
+
 }
